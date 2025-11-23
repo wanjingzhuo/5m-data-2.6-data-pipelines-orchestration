@@ -4,7 +4,7 @@
 
 ### Preparation
 
-Create the conda environment based on the `elt_environment.yml` file in the [environment folder](https://github.com/su-ntu-ctp/5m-data-2.1-intro-big-data-eng/tree/main/environments). We will also be using google cloud (for which the account was created in the previous unit) in this lesson.
+Create the conda environment based on the `elt-environment.yml` file in the [environment folder](https://github.com/su-ntu-ctp/5m-data-2.1-intro-big-data-eng/tree/main/environments). We will also be using google cloud (for which the account was created in the previous unit) in this lesson.
 
 ### Lesson Overview
 
@@ -342,7 +342,7 @@ You should see 2 new tables in the `resale_flat` dataset.
 
 ### Create a Dagster Project
 
-We need to use `dagster_environment.yml` file in the [environment folder](https://github.com/su-ntu-ctp/5m-data-2.1-intro-big-data-eng/tree/main/environments) in the repository of module 2.1. Create the environment and run the following command to activate the environment:
+We need to use `dagster-environment.yml` file in the [environment folder](https://github.com/su-ntu-ctp/5m-data-2.1-intro-big-data-eng/tree/main/environments) in the repository of module 2.1. Create the environment and run the following command to activate the environment:
 
 ```bash
 conda activate dagster
