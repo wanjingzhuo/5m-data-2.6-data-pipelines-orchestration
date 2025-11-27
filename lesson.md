@@ -121,7 +121,7 @@ meltano config tap-github test
 We add a JSON target to test our pipeline. The JSON target will dump the data into a JSON file.
 
 ```bash
-meltano add loader target-jsonl --variant=andyh1203
+meltano add loader target-jsonl
 ```
 
 ### Test Run Github to JSON
