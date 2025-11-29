@@ -195,6 +195,9 @@ Please exit `meltano-ingestion` folder, use `cd ..` to return to the root folder
 meltano init meltano-resale
 cd meltano-resale
 ```
+
+>⚠️ Warning! Many learners here make the mistake here of running `meltano init meltano-resale` inside the `meltano-ingestion` project. Please do not do this! Each meltano project should be within its own project folder. So please return to the root folder `5M-DATA-2.6-DATA-PIPELINES-ORCHESTRATION` before running `meltano init meltano-resale`.
+
 To add the extractor to our project, run:
 
 ```bash
