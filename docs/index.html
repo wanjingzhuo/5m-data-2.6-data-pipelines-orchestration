@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Testing Guide - Great Expectations & DBT</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🔍 Data Testing Guide</h1>
+            <p class="subtitle">Master data quality with Great Expectations & DBT Testing</p>
+        </header>
+
+        <nav class="tab-nav">
+            <button class="tab-btn active" data-tab="overview">Overview</button>
+            <button class="tab-btn" data-tab="gx">Great Expectations</button>
+            <button class="tab-btn" data-tab="dbt">DBT Testing</button>
+            <button class="tab-btn" data-tab="workflow">Complete Workflow</button>
+            <button class="tab-btn" data-tab="orchestration">Orchestration</button>
+        </nav>
+
+        <!-- Overview Tab -->
+        <div class="tab-content active" id="overview">
+            <section class="card">
+                <h2>📚 What is Data Testing?</h2>
+                <p>Data testing is an important part of data quality management. It verifies that data satisfies expected properties.</p>
+                <div class="info-box">
+                    <p><strong>Also known as:</strong> Data validation, data quality assurance, data quality control, data quality assessment</p>
+                </div>
+            </section>
+
+            <section class="card">
+                <h2>🛠️ Technologies Covered</h2>
+                <div class="tech-grid">
+                    <!-- Great Expectations -->
+                    <div class="tech-feature">
+                        <div class="tech-header">
+                            <h3>Great Expectations</h3>
+                            <p>Python library for data testing and validation</p>
+                        </div>
+                        <div class="feature-buttons">
+                            <button class="feature-btn" data-modal="file-support">📁 File Support</button>
+                            <button class="feature-btn" data-modal="database-support">🗄️ Database Support</button>
+                            <button class="feature-btn" data-modal="data-lakes">🏞️ Data Lakes</button>
+                        </div>
+                    </div>
+                    
+                    <!-- DBT Testing -->
+                    <div class="tech-feature">
+                        <div class="tech-header">
+                            <h3>DBT Testing</h3>
+                            <p>Built-in testing framework with extensible packages</p>
+                        </div>
+                        <div class="feature-buttons">
+                            <button class="feature-btn" data-modal="builtin-tests">✅ Built-in Tests</button>
+                            <button class="feature-btn" data-modal="dbt-utils">🔧 dbt_utils</button>
+                            <button class="feature-btn" data-modal="dbt-expectations">🎯 dbt-expectations</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="card hint-card">
+                <div class="hint-icon">💡</div>
+                <div>
+                    <h3>Getting Started</h3>
+                    <p>Click on the tabs above to explore Great Expectations or DBT Testing in detail!</p>
+                </div>
+            </section>
+        </div>
+
+        <!-- Great Expectations Tab -->
+        <div class="tab-content" id="gx">
+            <section class="card">
+                <h2>🚀 Installation & Setup</h2>
+                <div class="collapsible-section">
+                    <button class="collapsible-btn">
+                        <span>Step 1: Environment Setup</span>
+                        <span class="arrow">▼</span>
+                    </button>
+                    <div class="collapsible-content">
+                        <pre><code class="language-bash">conda activate elt</code></pre>
+                        <p class="code-explanation">Activate your conda environment for data engineering tasks</p>
+                    </div>
+                </div>
+
+                <div class="collapsible-section">
+                    <button class="collapsible-btn">
+                        <span>Step 2: Install Great Expectations</span>
+                        <span class="arrow">▼</span>
+                    </button>
+                    <div class="collapsible-content">
+                        <pre><code class="language-bash">pip install great_expectations</code></pre>
+                        <p class="code-explanation">Install the Great Expectations library</p>
+                    </div>
+                </div>
+
+                <div class="collapsible-section">
+                    <button class="collapsible-btn">
+                        <span>Step 3: Import Libraries</span>
+                        <span class="arrow">▼</span>
+                    </button>
+                    <div class="collapsible-content">
+                        <pre><code class="language-python">import pandas as pd
+import great_expectations as gx
+from great_expectations import expectations as gxe</code></pre>
+                        <p class="code-explanation">Import necessary libraries for data testing</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="card">
+                <h2>📋 Core Concepts</h2>
+                
+                <div class="concept-card">
+                    <h3>1. Data Context</h3>
+                    <p>Defines storage location for metadata, configurations, and validation results</p>
+                    <div class="hint-box">💡 All GX scripts start with creating a Data Context</div>
+                    <pre><code class="language-python">context = gx.get_context()</code></pre>
+                </div>
+
+                <div class="concept-card">
+                    <h3>2. Data Sources</h3>
+                    <p>Tell GX where your data is located and how to connect to it</p>
+                    <div class="supported-sources">
+                        <span class="source-tag">Amazon S3</span>
+                        <span class="source-tag">Azure Blob</span>
+                        <span class="source-tag">Google Cloud</span>
+                        <span class="source-tag">Local Files</span>
+                    </div>
+                    <pre><code class="language-python">source_folder = "data/"
+data_source_name = "resale_flat"
+
+data_source = context.data_sources.add_pandas_filesystem(
+    name=data_source_name, 
+    base_directory=source_folder
+)</code></pre>
+                </div>
+
+                <div class="concept-card">
+                    <h3>3. Data Assets</h3>
+                    <p>A collection of related records within a Data Source</p>
+                    <pre><code class="language-python">asset_name = "resale_csv_files"
+file_csv_asset = data_source.add_csv_asset(name=asset_name)</code></pre>
+                </div>
+
+                <div class="concept-card">
+                    <h3>4. Batch Definition</h3>
+                    <p>Request all records or a subset from a Data Asset</p>
+                    <pre><code class="language-python">batch_definition = file_data_asset.add_batch_definition_path(
+    name="resale_flat_201701_202306.csv",
+    path="resale_flat_201701_202306.csv"
+)
+
+batch = batch_definition.get_batch()</code></pre>
+                </div>
+            </section>
+
+            <section class="card">
+                <h2>✅ Creating Expectations</h2>
+                
+                <div class="expectations-demo">
+                    <h3>Single Expectation</h3>
+                    <pre><code class="language-python">preset_expectation = gx.expectations.ExpectColumnMaxToBeBetween(
+    column="lease_commence_date",
+    min_value=1,
+    max_value=2020
+)
+
+validation_results = batch.validate(preset_expectation)</code></pre>
+                </div>
+
+                <div class="expectations-demo">
+                    <h3>Expectation Suite</h3>
+                    <div class="hint-box">💡 Group multiple expectations together for comprehensive validation</div>
+                    <pre><code class="language-python">suite_name = "sctp_expectation_suite"
+suite = gx.ExpectationSuite(name=suite_name)
+suite = context.suites.add(suite)
+suite.add_expectation(preset_expectation)</code></pre>
+                </div>
+
+                <div class="expectations-demo">
+                    <h3>Validation Definition</h3>
+                    <pre><code class="language-python">definition_name = "sctp_validation_definition"
+validation_definition = gx.ValidationDefinition(
+    data=batch_definition,
+    suite=suite,
+    name=definition_name
+)
+
+validation_results = validation_definition.run()</code></pre>
+                </div>
+            </section>
+
+            <section class="card">
+                <h2>🎯 Working with DataFrames</h2>
+                <div class="hint-box">💡 Directly map DataFrames for more flexible testing</div>
+                
+                <div class="workflow-steps">
+                    <div class="workflow-step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>Load Data</h4>
+                            <pre><code class="language-python">resale_data = pd.read_csv("data/resale_flat_202307.csv")</code></pre>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>Create DataFrame Data Source</h4>
+                            <pre><code class="language-python">data_source = context.data_sources.add_pandas(
+    name="resale_dataframe"
+)</code></pre>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>Add DataFrame Asset</h4>
+                            <pre><code class="language-python">data_asset = data_source.add_dataframe_asset(
+    name="resale_202307_asset"
+)</code></pre>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h4>Create Batch & Validate</h4>
+                            <pre><code class="language-python">batch_definition = data_asset.add_batch_definition_whole_dataframe(
+    "resale_flat_202307_dataframe"
+)
+
+batch = batch_definition.get_batch(
+    batch_parameters={"dataframe": resale_data}
+)
+
+expectation = gx.expectations.ExpectColumnToExist(
+    column="month",
+    column_index=0
+)
+
+validation_results = batch.validate(expectation)</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="card resource-card">
+                <h2>📖 Additional Resources</h2>
+                <ul class="resource-list">
+                    <li><a href="https://docs.greatexpectations.io/docs/core/introduction/gx_overview" target="_blank">GX Overview Documentation</a></li>
+                    <li><a href="https://greatexpectations.io/expectations/" target="_blank">Expectations Gallery</a></li>
+                    <li><a href="https://docs.greatexpectations.io/docs/core/connect_to_data/filesystem_data/" target="_blank">Connecting to Filesystem Data</a></li>
+                </ul>
+            </section>
+        </div>
+
+        <!-- DBT Testing Tab -->
+        <div class="tab-content" id="dbt">
+            <section class="card">
+                <h2>🚀 DBT Testing Setup</h2>
+                <p>DBT provides built-in tests and can be extended with powerful testing packages</p>
+            </section>
+
+            <section class="card">
+                <h2>📦 Installing dbt_utils</h2>
+                
+                <div class="collapsible-section">
+                    <button class="collapsible-btn">
+                        <span>Step 1: Create packages.yml</span>
+                        <span class="arrow">▼</span>
+                    </button>
+                    <div class="collapsible-content">
+                        <pre><code class="language-yaml">packages:
+  - package: dbt-labs/dbt_utils
+    version: 1.3.0</code></pre>
+                        <p class="code-explanation">Create this file in your DBT project root directory</p>
+                    </div>
+                </div>
+
+                <div class="collapsible-section">
+                    <button class="collapsible-btn">
+                        <span>Step 2: Install Dependencies</span>
+                        <span class="arrow">▼</span>
+                    </button>
+                    <div class="collapsible-content">
+                        <pre><code class="language-bash">dbt deps</code></pre>
+                        <p class="code-explanation">This will download and install the dbt_utils package</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="card">
+                <h2>✅ dbt_utils Tests</h2>
+                
+                <div class="test-example">
+                    <h3>accepted_range Test</h3>
+                    <p>Check if values are within an acceptable range</p>
+                    <pre><code class="language-yaml">- name: date
+  tests:
+    - dbt_utils.accepted_range:
+        min_value: "PARSE_DATE('%F', '2012-01-01')"
+        max_value: "CURRENT_DATE()"</code></pre>
+                    <div class="hint-box">💡 Great for validating date ranges or numeric boundaries</div>
+                </div>
+
+                <div class="test-example">
+                    <h3>expression_is_true Test</h3>
+                    <p>Validate complex business logic across multiple columns</p>
+                    <pre><code class="language-yaml">tests:
+  - dbt_utils.expression_is_true:
+      expression: "ROUND(sale_dollars, 1) = TRUNC(bottles_sold * state_bottle_retail, 1)"</code></pre>
+                    <div class="hint-box">💡 This is a model-level test - place it outside the columns section</div>
+                </div>
+            </section>
+
+            <section class="card">
+                <h2>📦 Installing dbt-expectations</h2>
+                
+                <div class="collapsible-section">
+                    <button class="collapsible-btn">
+                        <span>Update packages.yml</span>
+                        <span class="arrow">▼</span>
+                    </button>
+                    <div class="collapsible-content">
+                        <pre><code class="language-yaml">packages:
+  - package: dbt-labs/dbt_utils
+    version: 1.3.0
+  - package: metaplane/dbt_expectations
+    version: 0.10.9</code></pre>
+                        <p class="code-explanation">Add dbt-expectations to your packages file</p>
+                        <pre><code class="language-bash">dbt deps</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <section class="card">
+                <h2>✅ dbt-expectations Tests</h2>
+                
+                <div class="test-example">
+                    <h3>Column Type Validation</h3>
+                    <p>Ensure columns have the correct data types</p>
+                    <pre><code class="language-yaml">- name: invoice_and_item_number
+  tests:
+    - dbt_expectations.expect_column_values_to_be_of_type:
+        column_type: string
+
+- name: date
+  tests:
+    - dbt_expectations.expect_column_values_to_be_of_type:
+        column_type: date</code></pre>
+                    <div class="hint-box">💡 Add type tests for all critical columns to catch schema changes early</div>
+                </div>
+            </section>
+
+            <section class="card">
+                <h2>🔄 Running DBT Tests</h2>
+                
+                <div class="workflow-steps">
+                    <div class="workflow-step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>Debug Configuration</h4>
+                            <pre><code class="language-bash">dbt debug</code></pre>
+                            <p>Verify your connection and configuration</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>Create Snapshots</h4>
+                            <pre><code class="language-bash">dbt snapshot</code></pre>
+                            <p>Create snapshot tables for slowly changing dimensions</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>Run Models</h4>
+                            <pre><code class="language-bash">dbt run</code></pre>
+                            <p>Build your models in the data warehouse</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h4>Execute Tests</h4>
+                            <pre><code class="language-bash">dbt test</code></pre>
+                            <p>Run all tests defined in your schema files</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="card">
+                <h2>📊 Built-in DBT Tests</h2>
+                <div class="builtin-tests-grid">
+                    <div class="builtin-test">
+                        <h4>unique</h4>
+                        <p>Ensures column values are unique</p>
+                    </div>
+                    <div class="builtin-test">
+                        <h4>not_null</h4>
+                        <p>Checks for null values</p>
+                    </div>
+                    <div class="builtin-test">
+                        <h4>accepted_values</h4>
+                        <p>Validates against a list of values</p>
+                    </div>
+                    <div class="builtin-test">
+                        <h4>relationships</h4>
+                        <p>Verifies foreign key constraints</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="card resource-card">
+                <h2>📖 Additional Resources</h2>
+                <ul class="resource-list">
+                    <li><a href="https://hub.getdbt.com/dbt-labs/dbt_utils/latest/" target="_blank">dbt_utils Documentation</a></li>
+                    <li><a href="https://hub.getdbt.com/calogica/dbt_expectations/latest/" target="_blank">dbt-expectations Documentation</a></li>
+                    <li><a href="https://docs.getdbt.com/docs/build/tests" target="_blank">DBT Testing Documentation</a></li>
+                </ul>
+            </section>
+        </div>
+
+        <!-- Orchestration Tab -->
+        <div class="tab-content" id="orchestration">
+            <section class="card">
+                <h2>⚙️ Orchestration with Dagster</h2>
+                <p>Automate and schedule your data testing workflows with orchestration tools</p>
+            </section>
+
+            <section class="card">
+                <h2>🚀 Why Orchestration?</h2>
+                <div class="info-box">
+                    <p>Orchestration allows you to automate your data pipelines, schedule testing workflows, manage dependencies, and monitor data quality continuously in production environments.</p>
+                </div>
+            </section>
+
+            <section class="card">
+                <h2>📦 Dagster for Data Testing</h2>
+                <div class="hint-box">💡 Dagster provides powerful capabilities for orchestrating both Meltano and DBT pipelines with built-in testing support</div>
+                
+                <div class="orchestration-example">
+                    <h3>Sample Dagster Configuration</h3>
+                    <pre><code class="language-python">from dagster import Definitions, ScheduleDefinition, job
+from dagster_meltano import meltano_resource, meltano_run_op
+
+@job(resource_defs={"meltano": meltano_resource})
+def run_elt_job():
+    tap_done = meltano_run_op("tap-github target-bigquery")()
+
+# Schedule to run daily at midnight
+elt_schedule = ScheduleDefinition(
+    job=run_elt_job,
+    cron_schedule="0 0 * * *",
+)
+
+defs = Definitions(
+    jobs=[run_elt_job],
+    schedules=[elt_schedule],
+)</code></pre>
+                </div>
+            </section>
+
+            <section class="card">
+                <h2>🔄 Orchestrated Testing Workflow</h2>
+                
+                <div class="workflow-steps">
+                    <div class="workflow-step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>Schedule Data Ingestion</h4>
+                            <pre><code class="language-python">@job
+def ingest_data():
+    # Run Meltano tap to extract data
+    meltano_run_op("tap-source target-warehouse")()</code></pre>
+                            <p>Extract data from source systems on a schedule</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>Validate Raw Data with GX</h4>
+                            <pre><code class="language-python">@op
+def validate_raw_data():
+    # Run Great Expectations validation
+    context = gx.get_context()
+    results = validation_definition.run()
+    return results</code></pre>
+                            <p>Validate raw data quality before transformation</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>Run DBT Transformations</h4>
+                            <pre><code class="language-bash">dbt run</code></pre>
+                            <p>Transform data using DBT models</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h4>Execute DBT Tests</h4>
+                            <pre><code class="language-bash">dbt test</code></pre>
+                            <p>Run all DBT tests to validate transformations</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">5</div>
+                        <div class="step-content">
+                            <h4>Monitor & Alert</h4>
+                            <p>Track test results and send alerts on failures</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="card">
+                <h2>📊 Dagster Configuration Example</h2>
+                
+                <div class="collapsible-section">
+                    <button class="collapsible-btn">
+                        <span>Complete Dagster Project Setup</span>
+                        <span class="arrow">▼</span>
+                    </button>
+                    <div class="collapsible-content">
+                        <pre><code class="language-python">from dagster import Definitions, ScheduleDefinition, job
+from dagster_dbt import dbt_cli_resource, dbt_run_op, dbt_test_op
+
+@job(resource_defs={"dbt": dbt_cli_resource})
+def dbt_pipeline():
+    dbt_run = dbt_run_op()
+    dbt_test_op(start_after=dbt_run)
+
+# Schedule to run daily
+dbt_schedule = ScheduleDefinition(
+    job=dbt_pipeline,
+    cron_schedule="0 2 * * *",  # 2 AM daily
+)
+
+defs = Definitions(
+    jobs=[dbt_pipeline],
+    schedules=[dbt_schedule],
+)</code></pre>
+                        <p class="code-explanation">This sets up a complete DBT pipeline with automated testing that runs daily at 2 AM</p>
+                    </div>
+                </div>
+
+                <div class="collapsible-section">
+                    <button class="collapsible-btn">
+                        <span>Running Dagster Development Server</span>
+                        <span class="arrow">▼</span>
+                    </button>
+                    <div class="collapsible-content">
+                        <pre><code class="language-bash">dagster dev</code></pre>
+                        <p class="code-explanation">Start the Dagster UI to monitor and trigger jobs manually</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="card">
+                <h2>✨ Benefits of Orchestration</h2>
+                
+                <div class="best-practices-grid">
+                    <div class="practice-card">
+                        <div class="practice-icon">🔄</div>
+                        <h4>Automation</h4>
+                        <p>Schedule tests to run automatically without manual intervention</p>
+                    </div>
+
+                    <div class="practice-card">
+                        <div class="practice-icon">🔗</div>
+                        <h4>Dependency Management</h4>
+                        <p>Ensure tests run in the correct order with proper dependencies</p>
+                    </div>
+
+                    <div class="practice-card">
+                        <div class="practice-icon">📊</div>
+                        <h4>Visibility</h4>
+                        <p>Monitor all pipeline runs and test results in one place</p>
+                    </div>
+
+                    <div class="practice-card">
+                        <div class="practice-icon">🚨</div>
+                        <h4>Alerting</h4>
+                        <p>Get notified immediately when data quality issues arise</p>
+                    </div>
+
+                    <div class="practice-card">
+                        <div class="practice-icon">📈</div>
+                        <h4>Scalability</h4>
+                        <p>Handle complex pipelines with multiple data sources and tests</p>
+                    </div>
+
+                    <div class="practice-card">
+                        <div class="practice-icon">🔍</div>
+                        <h4>Debugging</h4>
+                        <p>Easily identify and troubleshoot pipeline failures</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="card resource-card">
+                <h2>📖 Orchestration Resources</h2>
+                <ul class="resource-list">
+                    <li><a href="https://docs.dagster.io/" target="_blank">Dagster Documentation</a></li>
+                    <li><a href="https://docs.dagster.io/integrations/dbt" target="_blank">Dagster DBT Integration</a></li>
+                    <li><a href="https://docs.dagster.io/integrations/meltano" target="_blank">Dagster Meltano Integration</a></li>
+                </ul>
+            </section>
+        </div>
+
+        <!-- Complete Workflow Tab -->
+        <div class="tab-content" id="workflow">
+            <section class="card">
+                <h2>🔄 Complete Data Testing Workflow</h2>
+                <p>Integrate both Great Expectations and DBT into your data pipeline</p>
+            </section>
+
+            <section class="card">
+                <h2>📋 Recommended Testing Strategy</h2>
+                
+                <div class="strategy-grid">
+                    <div class="strategy-card">
+                        <h3>Use Great Expectations for:</h3>
+                        <ul>
+                            <li>✓ Raw data ingestion validation</li>
+                            <li>✓ File-based data sources</li>
+                            <li>✓ Complex statistical validations</li>
+                            <li>✓ Pre-transformation checks</li>
+                            <li>✓ Data quality monitoring</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="strategy-card">
+                        <h3>Use DBT Testing for:</h3>
+                        <ul>
+                            <li>✓ Transformed data validation</li>
+                            <li>✓ Database table testing</li>
+                            <li>✓ Schema validation</li>
+                            <li>✓ Business logic verification</li>
+                            <li>✓ Integration testing</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <section class="card">
+                <h2>🎯 Example Pipeline</h2>
+                
+                <div class="pipeline-flow">
+                    <div class="pipeline-stage">
+                        <div class="stage-header">Stage 1: Ingestion</div>
+                        <div class="stage-content">
+                            <p><strong>Tool:</strong> Great Expectations</p>
+                            <p>Validate raw data from source systems</p>
+                            <ul>
+                                <li>Check file formats</li>
+                                <li>Verify column existence</li>
+                                <li>Validate data types</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="pipeline-arrow">→</div>
+
+                    <div class="pipeline-stage">
+                        <div class="stage-header">Stage 2: Transformation</div>
+                        <div class="stage-content">
+                            <p><strong>Tool:</strong> DBT</p>
+                            <p>Transform and model data</p>
+                            <ul>
+                                <li>Create dimensional models</li>
+                                <li>Apply business logic</li>
+                                <li>Generate aggregations</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="pipeline-arrow">→</div>
+
+                    <div class="pipeline-stage">
+                        <div class="stage-header">Stage 3: Validation</div>
+                        <div class="stage-content">
+                            <p><strong>Tool:</strong> DBT Testing</p>
+                            <p>Validate transformed data</p>
+                            <ul>
+                                <li>Run schema tests</li>
+                                <li>Verify relationships</li>
+                                <li>Check business rules</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="card">
+                <h2>✨ Best Practices</h2>
+                
+                <div class="best-practices-grid">
+                    <div class="practice-card">
+                        <div class="practice-icon">📝</div>
+                        <h4>Document Your Tests</h4>
+                        <p>Clearly document what each test validates and why it's important</p>
+                    </div>
+
+                    <div class="practice-card">
+                        <div class="practice-icon">🔄</div>
+                        <h4>Automate Testing</h4>
+                        <p>Integrate tests into your CI/CD pipeline for continuous validation</p>
+                    </div>
+
+                    <div class="practice-card">
+                        <div class="practice-icon">📊</div>
+                        <h4>Monitor Test Results</h4>
+                        <p>Track test failures over time to identify data quality trends</p>
+                    </div>
+
+                    <div class="practice-card">
+                        <div class="practice-icon">🎯</div>
+                        <h4>Test Early & Often</h4>
+                        <p>Validate data at each stage of your pipeline</p>
+                    </div>
+
+                    <div class="practice-card">
+                        <div class="practice-icon">🔍</div>
+                        <h4>Start Simple</h4>
+                        <p>Begin with basic tests and gradually add complexity</p>
+                    </div>
+
+                    <div class="practice-card">
+                        <div class="practice-icon">🤝</div>
+                        <h4>Collaborate</h4>
+                        <p>Work with data consumers to understand quality requirements</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="card highlight-card">
+                <h2>🎓 Key Takeaways</h2>
+                <ul class="takeaways-list">
+                    <li>Data testing is essential for maintaining data quality and reliability</li>
+                    <li>Great Expectations excels at validating raw data and complex statistical checks</li>
+                    <li>DBT testing integrates seamlessly with your transformation workflow</li>
+                    <li>Combining both tools provides comprehensive coverage across your pipeline</li>
+                    <li>Automation and monitoring are crucial for sustainable data quality</li>
+                </ul>
+            </section>
+        </div>
+
+        <footer>
+            <p>💡 <strong>Tip:</strong> Click on different sections to explore and expand code examples!</p>
+        </footer>
+    </div>
+
+    <!-- Modal Structure -->
+    <div id="modal-overlay" class="modal-overlay">
+        <div class="modal-container">
+            <button class="modal-close">&times;</button>
+            <div class="modal-content" id="modal-content">
+                <!-- Content will be dynamically inserted here -->
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
