@@ -500,7 +500,6 @@ from dagster import (
     define_asset_job,
     load_assets_from_modules,
 )
-from dagster_duckdb_pandas import DuckDBPandasIOManager
 
 from . import assets
 
@@ -516,15 +515,10 @@ pandas_schedule = ScheduleDefinition(
     cron_schedule="0 0 * * *"  # every day at midnight
 )
 
-database_io_manager = DuckDBPandasIOManager(database="analytics.pandas_releases")
-
 defs = Definitions(
     assets=all_assets,
     jobs=[pandas_job],
     schedules=[pandas_schedule],
-    resources={
-        "io_manager": database_io_manager,
-    },
 )
 ```
 
