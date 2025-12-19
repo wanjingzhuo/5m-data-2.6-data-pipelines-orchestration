@@ -61,8 +61,12 @@ To create a Meltano project, run:
 
 ```bash
 meltano init meltano-ingestion
+```
+
+```bash
 cd meltano-ingestion
 ```
+
 
 ### Add an Extractor to Pull Data from Github
 
@@ -72,13 +76,13 @@ We will use the `tap-github` extractor to pull the _releases_ of `pandas` librar
 To add the extractor to our project, run (make sure you are in the `meltano-ingestion` folder!):
 
 ```bash
-meltano add extractor tap-github
+meltano add tap-github
 ```
 
 Next, configure the extractor by running:
 
 ```bash
-meltano config tap-github set --interactive
+meltano config set tap-github --interactive
 ```
 
 You will be prompted to enter many options, we just need to enter the following:
@@ -113,7 +117,7 @@ meltano select tap-github releases published_at
 
 Finally, we can test the connection using the command below:
 ```bash
-meltano config tap-github test
+meltano config test tap-github
 ```
 
 ### Add a Dummy Loader to Dump Data into JSON
@@ -121,7 +125,7 @@ meltano config tap-github test
 We add a JSON target to test our pipeline. The JSON target will dump the data into a JSON file.
 
 ```bash
-meltano add loader target-jsonl
+meltano add target-jsonl
 ```
 
 ### Test Run Github to JSON
@@ -145,11 +149,11 @@ Finally, create a service account with the `BigQuery Admin` role and download th
 We will now add a loader to load the data into BigQuery.
 
 ```bash
-meltano add loader target-bigquery
+meltano add target-bigquery
 ```
 
 ```bash
-meltano config target-bigquery set --interactive
+meltano config set target-bigquery --interactive
 ```
 
 Set the following options:
@@ -201,13 +205,13 @@ cd meltano-resale
 To add the extractor to our project, run:
 
 ```bash
-meltano add extractor tap-postgres
+meltano add tap-postgres
 ```
 
 Next, configure the extractor by running:
 
 ```bash
-meltano config tap-postgres set --interactive
+meltano config set tap-postgres --interactive
 ```
 
 Configure the following options:
@@ -234,17 +238,17 @@ meltano select tap-postgres --list
 Test your configuration:
 
 ```bash
-meltano config tap-postgres test
+meltano config test tap-postgres
 ```
 
 We will now add a loader to load the data into BigQuery.
 
 ```bash
-meltano add loader target-bigquery
+meltano add target-bigquery
 ```
 
 ```bash
-meltano config target-bigquery set --interactive
+meltano config set target-bigquery --interactive
 ```
 
 Set the following options:
