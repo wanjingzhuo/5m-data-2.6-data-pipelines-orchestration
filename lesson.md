@@ -177,6 +177,7 @@ meltano run tap-github target-bigquery
 
 You will see the logs printed out in your console. Once the pipeline is completed, you can check the data in BigQuery.
 
+## Part 2 - ELT from Postgres to Bigquery using HDB Resales Data with dbt
 ### Add an Extractor to Pull Data from Postgres (Supabase)
 
 In your existing GCP project, go to BigQuery. Then create a dataset in BigQuery called `resale` (multi-region: US).
@@ -341,7 +342,7 @@ You should see 2 new tables in the `resale_flat` dataset.
 
 ---
 
-## Part 2 - Hands-on with Orchestration I
+## Part 3 - Hands-on with Orchestration I (Optional / Self Study)
 
 ### Background
 
