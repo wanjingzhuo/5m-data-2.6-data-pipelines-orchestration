@@ -87,10 +87,20 @@ meltano config set tap-github --interactive
 
 You will be prompted to enter many options, we just need to enter the following:
 
-- `auth_token`: Please use the same auth token (ie. personal access token) you created for your own Github repo during earlier lesson
+- `auth_token`: Please use the same auth token (ie. personal access token) you created for your own Github repo during earlier lesson. **Please note that when you paste the token, it will not display on the screen.**
 - `repositories`: `["pandas-dev/pandas"]`
 
-This will add the configuration to the `meltano.yml` file, and the secret auth token to the `.env` file. Note that if you want to set them programatically, you can refer to: https://hub.meltano.com/extractors/tap-github/ 
+This will add the configuration to the `meltano.yml` file, and the secret auth token to the `.env` file. Note that if you want to set them programmatically, you can refer to: https://hub.meltano.com/extractors/tap-github/ 
+
+Next, we need to test the connection using the command below:
+```bash
+meltano config test tap-github
+```
+> Note:
+> - To check if your token is correct, under the folder `meltano-ingestion`, look for `.env` file and make sure your token is correct.
+> - Also make sure your token has not expired.
+> - Under the folder `meltano-ingestion`, look for the file `meltano.yml`. Make sure your `repositories`is `["pandas-dev/pandas"]`.
+
 
 Now that the extractor has been configured, it'll know where and how to find your data, but won't yet know which specific entities and attributes (tables and columns) you're interested in.
 
@@ -118,11 +128,6 @@ meltano select tap-github releases published_at
 We can use the following command to confirm what we have selected:
 ```bash
 meltano select tap-github --list
-```
-
-Finally, we can test the connection using the command below:
-```bash
-meltano config test tap-github
 ```
 
 ### Add a Dummy Loader to Dump Data into JSON
@@ -253,6 +258,7 @@ Use the following command to list and confirm our selection:
 meltano select tap-postgres --list
 ```
 
+### Add a Loader to Load Data into BigQuery
 
 We will now add a loader to load the data into BigQuery.
 
