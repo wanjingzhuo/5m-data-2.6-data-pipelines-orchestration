@@ -342,7 +342,7 @@ You should see 2 new tables in the `resale_flat` dataset.
 
 ---
 
-## Part 3 - Hands-on with Orchestration I (Optional / Self Study)
+## Part 3 - Hands-on with Orchestration I (Self Study)
 
 ### Background
 
@@ -406,6 +406,9 @@ First, we need to create a hidden file call `.env`. Inside the `.env` file, we n
 ```yaml
 GITHUB_TOKEN='<YOUR-GITHUB-PERSONAL-ACCESS-TOKEN>'
 ```
+
+> Note: The `.env` file need to be under the folder `dagster-orchestration`.
+
 Replace the `<YOUR-GITHUB-PERSONAL-ACCESS-TOKEN>` with your Github personal access token.
 
 Finally, you need to replace the content in `dagster-orchestration/dagster_orchestration/assets.py` with the below. 
