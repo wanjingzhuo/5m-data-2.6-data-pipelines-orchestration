@@ -115,6 +115,11 @@ meltano select tap-github releases body
 meltano select tap-github releases published_at
 ```
 
+We can use the following command to confirm what we have selected:
+```bash
+meltano select tap-github --list
+```
+
 Finally, we can test the connection using the command below:
 ```bash
 meltano config test tap-github
@@ -198,6 +203,9 @@ Please exit `meltano-ingestion` folder, use `cd ..` to return to the root folder
 
 ```bash
 meltano init meltano-resale
+```
+
+```bash
 cd meltano-resale
 ```
 
@@ -225,8 +233,17 @@ Configure the following options:
 - `user`: *postgres.username*
 
 
-Next, we need to select the table that we need:
+Test your configuration:
+```bash
+meltano config test tap-postgres
+```
 
+Use the following command to list what is available on the database:
+```bash
+meltano select tap-postgres --list --all
+```
+
+Next, we need to select the table that we need:
 ```bash
 meltano select tap-postgres "public-resale_flat_prices_from_jan_2017"
 ```
@@ -236,11 +253,6 @@ Use the following command to list and confirm our selection:
 meltano select tap-postgres --list
 ```
 
-Test your configuration:
-
-```bash
-meltano config test tap-postgres
-```
 
 We will now add a loader to load the data into BigQuery.
 
