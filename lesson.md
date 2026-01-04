@@ -188,21 +188,27 @@ meltano run tap-github target-bigquery
 You will see the logs printed out in your console. Once the pipeline is completed, you can check the data in BigQuery.
 
 ## Part 2 - ELT from Postgres to Bigquery using HDB Resales Data with dbt
-### Add an Extractor to Pull Data from Postgres (Supabase)
 
-In your existing GCP project, go to BigQuery. Then create a dataset in BigQuery called `resale` (multi-region: US).
+The following project demonstrate using Meltano to ingest data from Postgres database (Supabase) and transfer the data into BigQuery.
 
-We will use the `tap-postgres` extractor to pull data from a Postgres database hosted on [Supabase](https://supabase.com). 
+### Create HDB Resale Data in Postgres-Supabase (Optional)
 
 > Supabase is an open-source backend-as-a-service platform that provides a suite of tools for building applications powered by PostgreSQL (Postgres) as its database. Postgres is a powerful, object-relational database system known for its reliability, extensibility and compliance with SQL standards. Supabase simplifies database management by offering an intuitive interface to interact with Postgres, making it a popular choice for developers looking for a scalable and flexible backend solution.
 
 Go to the [Supabase](https://supabase.com) and create an account. Download the HDB housing data `Resale*.csv` file from the `data/` folder. Follow the instructions in this [setup file](supabase_db_setup_hdb.md) to setup your Postgres database table with the HDB housing data of resale flat prices based on registration date from Jan-2017 onwards. It is the same data that we used in module 1.
 
+> You can skip the database creation if you do not have the time, we will provide a similar database during class.   
+
+### Add an Extractor to Pull Data from Postgres (Supabase)
+
+We will use the `tap-postgres` extractor to pull data from a Postgres database hosted on [Supabase](https://supabase.com). 
+
 From Supabase, take note of your connection details from the Connection window, under Session Spooler:
 
 ![meltano](assets/supabase-screenshot.png)
 
-We're going to add an extrator for Postgress to get our data. An extractor is responsible for pulling data out of any data source. We will use the `tap-postgress` extractor to pull data from the Supabase server. 
+> The above is just a sample, we will provide actual connection details during class. For those setting up their Postgres database please refer to similar connection details in your database in Supabase.
+
 
 Please exit `meltano-ingestion` folder, use `cd ..` to return to the root folder. Create a new Meltano project by running:
 
@@ -210,11 +216,13 @@ Please exit `meltano-ingestion` folder, use `cd ..` to return to the root folder
 meltano init meltano-resale
 ```
 
+>⚠️ Warning! Many learners here make the mistake here of running `meltano init meltano-resale` inside the `meltano-ingestion` project. Please do not do this! Each meltano project should be within its own project folder. So please return to the root folder `5M-DATA-2.6-DATA-PIPELINES-ORCHESTRATION` before running `meltano init meltano-resale`.
+
 ```bash
 cd meltano-resale
 ```
 
->⚠️ Warning! Many learners here make the mistake here of running `meltano init meltano-resale` inside the `meltano-ingestion` project. Please do not do this! Each meltano project should be within its own project folder. So please return to the root folder `5M-DATA-2.6-DATA-PIPELINES-ORCHESTRATION` before running `meltano init meltano-resale`.
+We're going to add an extractor for Postgres to get our data. An extractor is responsible for pulling data out of any data source. We will use the `tap-postgres` extractor to pull data from the Supabase server. 
 
 To add the extractor to our project, run:
 
@@ -243,7 +251,7 @@ Test your configuration:
 meltano config test tap-postgres
 ```
 
-Use the following command to list what is available on the database:
+Use the following command to list what is available on the database, it will list all tables in Postgres:
 ```bash
 meltano select tap-postgres --list --all
 ```
@@ -299,6 +307,8 @@ You will see the logs printed out in your console. Once the pipeline is complete
 
 Let's create a Dbt project to transform the data in BigQuery. Before that please exit the `meltano-resale` folder by using the command `cd ..`.
 
+>⚠️ Warning! Please do not create a dbt project inside `meltano-resale` folder. So please return to the root folder `5M-DATA-2.6-DATA-PIPELINES-ORCHESTRATION` before running `dbt init resale_flat`.
+
 To create a new dbt project.
 
 ```bash
@@ -311,7 +321,7 @@ Fill in the required config details.
 - dataset: resale
 - project: your GCP project ID
 
-Please note that the profiles is located at the hidden folder .dbt of your home folder. The `profiles.yml` that is located in the home folder includes multiple projects. Alternatively, you can create a seprate `profiles.yml` for each project.
+Please note that the profiles is located at the hidden folder .dbt of your home folder. The `profiles.yml` that is located in the home folder includes multiple projects. For best practice, please create a separate `profiles.yml` for each project.
 
 To create separate profiles for each project, create a new file called `profiles.yml` under `resale_flat` folder. Then copy the following to `profiles.yml`. Remember to change your key file location and your project ID.
 ```yaml
@@ -564,12 +574,16 @@ Then open the UI at http://localhost:3000.
 
 To materialize an asset means to create or update it. Dagster materializes assets by executing the asset's function or triggering an integration. Navigate to Jobs -> `pandas_job`, there you will see the pipeline (dependency between the assets). You can manually trigger the pipeline by clicking on the 'Materialize all' button in the upper right corner of the screen. This will create a Dagster run that will materialize your assets.
 
+![alt text](assets/dagster1.png)
+
 To follow the progress of the materialization and monitor the logs, each run has a dedicated page. To find the page:
 
-- Click on the Runs tab in the upper navigation bar
-- Click the value in the Run ID column on the table of the Runs page
+- Click on the Runs tab in the left panel
+- Click the value in the `Run ID` column on the table of the Runs page
 - The top section displays the progress, and the bottom section live updates with the logs
 
-The metadata of the asset are available under the respective assets name in the Overview tab of `pandas_job` or in the Assets tab. Click on the 'Show Markdown' to see the redered markdown or image.
+The metadata of the asset are available under the respective assets name in the Overview tab of `pandas_job` or in the Assets tab. Click on the `Show Markdown` to see the rendered markdown or image.
+
+![alt text](assets/dagster2.png)
 
 You can also view the Job Schedule in the Schedules tab of `dagster_orchestration`. The schedule will run every day at midnight.
