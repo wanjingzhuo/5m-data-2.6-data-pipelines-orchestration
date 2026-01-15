@@ -588,4 +588,4 @@ The metadata of the asset are available under the respective assets name in the 
 
 ![alt text](assets/dagster2.png)
 
-You can also view the Job Schedule in the Schedules tab of `dagster_orchestration`. The schedule will run every day at midnight.
+You can also view the Job Schedule in the Automation tab of `pandas_job`. The schedule will run every day at midnight.
