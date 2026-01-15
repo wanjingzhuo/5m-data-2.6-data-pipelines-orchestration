@@ -386,6 +386,8 @@ conda activate dagster
 
 Also make sure you exit the dbt folder `resale_flat` using command `cd ..`
 
+>⚠️ Warning! Please do not create a dbt project inside `resale_flat` folder. So please return to the root folder `5M-DATA-2.6-DATA-PIPELINES-ORCHESTRATION` before running the command below.
+
 To create a new Dagster project:
 
 ```bash
