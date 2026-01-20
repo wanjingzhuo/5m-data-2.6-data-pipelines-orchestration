@@ -370,7 +370,7 @@ You should see 2 new tables in the `resale_flat` dataset.
 
 ---
 
-## Part 3 - Hands-on with Orchestration I (Self Study)
+## Part 3 - Hands-on with Orchestration I (Optional)
 
 ### Background
 
