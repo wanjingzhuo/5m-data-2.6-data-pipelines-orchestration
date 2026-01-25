@@ -61,8 +61,12 @@ To create a Meltano project, run:
 
 ```bash
 meltano init meltano-ingestion
+```
+
+```bash
 cd meltano-ingestion
 ```
+
 
 ### Add an Extractor to Pull Data from Github
 
@@ -72,21 +76,31 @@ We will use the `tap-github` extractor to pull the _releases_ of `pandas` librar
 To add the extractor to our project, run (make sure you are in the `meltano-ingestion` folder!):
 
 ```bash
-meltano add extractor tap-github
+meltano add tap-github
 ```
 
 Next, configure the extractor by running:
 
 ```bash
-meltano config tap-github set --interactive
+meltano config set tap-github --interactive
 ```
 
 You will be prompted to enter many options, we just need to enter the following:
 
-- `auth_token`: Please use the same auth token (ie. personal access token) you created for your own Github repo during earlier lesson
+- `auth_token`: Please use the same auth token (ie. personal access token) you created for your own Github repo during earlier lesson. **Please note that when you paste the token, it will not display on the screen.**
 - `repositories`: `["pandas-dev/pandas"]`
 
-This will add the configuration to the `meltano.yml` file, and the secret auth token to the `.env` file. Note that if you want to set them programatically, you can refer to: https://hub.meltano.com/extractors/tap-github/ 
+This will add the configuration to the `meltano.yml` file, and the secret auth token to the `.env` file. Note that if you want to set them programmatically, you can refer to: https://hub.meltano.com/extractors/tap-github/ 
+
+Next, we need to test the connection using the command below:
+```bash
+meltano config test tap-github
+```
+> Note:
+> - To check if your token is correct, under the folder `meltano-ingestion`, look for `.env` file and make sure your token is correct.
+> - Also make sure your token has not expired.
+> - Under the folder `meltano-ingestion`, look for the file `meltano.yml`. Make sure your `repositories`is `["pandas-dev/pandas"]`.
+
 
 Now that the extractor has been configured, it'll know where and how to find your data, but won't yet know which specific entities and attributes (tables and columns) you're interested in.
 
@@ -111,9 +125,9 @@ meltano select tap-github releases body
 meltano select tap-github releases published_at
 ```
 
-Finally, we can test the connection using the command below:
+We can use the following command to confirm what we have selected:
 ```bash
-meltano config tap-github test
+meltano select tap-github --list
 ```
 
 ### Add a Dummy Loader to Dump Data into JSON
@@ -121,7 +135,7 @@ meltano config tap-github test
 We add a JSON target to test our pipeline. The JSON target will dump the data into a JSON file.
 
 ```bash
-meltano add loader target-jsonl
+meltano add target-jsonl
 ```
 
 ### Test Run Github to JSON
@@ -145,11 +159,11 @@ Finally, create a service account with the `BigQuery Admin` role and download th
 We will now add a loader to load the data into BigQuery.
 
 ```bash
-meltano add loader target-bigquery
+meltano add target-bigquery
 ```
 
 ```bash
-meltano config target-bigquery set --interactive
+meltano config set target-bigquery --interactive
 ```
 
 Set the following options:
@@ -173,41 +187,53 @@ meltano run tap-github target-bigquery
 
 You will see the logs printed out in your console. Once the pipeline is completed, you can check the data in BigQuery.
 
-### Add an Extractor to Pull Data from Postgres (Supabase)
+## Part 2 - ELT from Postgres to Bigquery using HDB Resales Data with dbt
 
-In your existing GCP project, go to BigQuery. Then create a dataset in BigQuery called `resale` (multi-region: US).
+The following project demonstrate using Meltano to ingest data from Postgres database (Supabase) and transfer the data into BigQuery.
 
-We will use the `tap-postgres` extractor to pull data from a Postgres database hosted on [Supabase](https://supabase.com). 
+### Create HDB Resale Data in Postgres-Supabase (Optional)
 
 > Supabase is an open-source backend-as-a-service platform that provides a suite of tools for building applications powered by PostgreSQL (Postgres) as its database. Postgres is a powerful, object-relational database system known for its reliability, extensibility and compliance with SQL standards. Supabase simplifies database management by offering an intuitive interface to interact with Postgres, making it a popular choice for developers looking for a scalable and flexible backend solution.
 
 Go to the [Supabase](https://supabase.com) and create an account. Download the HDB housing data `Resale*.csv` file from the `data/` folder. Follow the instructions in this [setup file](supabase_db_setup_hdb.md) to setup your Postgres database table with the HDB housing data of resale flat prices based on registration date from Jan-2017 onwards. It is the same data that we used in module 1.
 
+> You can skip the database creation if you do not have the time, we will provide a similar database during class.   
+
+### Add an Extractor to Pull Data from Postgres (Supabase)
+
+We will use the `tap-postgres` extractor to pull data from a Postgres database hosted on [Supabase](https://supabase.com). 
+
 From Supabase, take note of your connection details from the Connection window, under Session Spooler:
 
 ![meltano](assets/supabase-screenshot.png)
 
-We're going to add an extrator for Postgress to get our data. An extractor is responsible for pulling data out of any data source. We will use the `tap-postgress` extractor to pull data from the Supabase server. 
+> The above is just a sample, we will provide actual connection details during class. For those setting up their Postgres database please refer to similar connection details in your database in Supabase.
+
 
 Please exit `meltano-ingestion` folder, use `cd ..` to return to the root folder. Create a new Meltano project by running:
 
 ```bash
 meltano init meltano-resale
-cd meltano-resale
 ```
 
 >⚠️ Warning! Many learners here make the mistake here of running `meltano init meltano-resale` inside the `meltano-ingestion` project. Please do not do this! Each meltano project should be within its own project folder. So please return to the root folder `5M-DATA-2.6-DATA-PIPELINES-ORCHESTRATION` before running `meltano init meltano-resale`.
 
+```bash
+cd meltano-resale
+```
+
+We're going to add an extractor for Postgres to get our data. An extractor is responsible for pulling data out of any data source. We will use the `tap-postgres` extractor to pull data from the Supabase server. 
+
 To add the extractor to our project, run:
 
 ```bash
-meltano add extractor tap-postgres
+meltano add tap-postgres
 ```
 
 Next, configure the extractor by running:
 
 ```bash
-meltano config tap-postgres set --interactive
+meltano config set tap-postgres --interactive
 ```
 
 Configure the following options:
@@ -220,8 +246,17 @@ Configure the following options:
 - `user`: *postgres.username*
 
 
-Next, we need to select the table that we need:
+Test your configuration:
+```bash
+meltano config test tap-postgres
+```
 
+Use the following command to list what is available on the database, it will list all tables in Postgres:
+```bash
+meltano select tap-postgres --list --all
+```
+
+Next, we need to select the table that we need:
 ```bash
 meltano select tap-postgres "public-resale_flat_prices_from_jan_2017"
 ```
@@ -231,20 +266,16 @@ Use the following command to list and confirm our selection:
 meltano select tap-postgres --list
 ```
 
-Test your configuration:
-
-```bash
-meltano config tap-postgres test
-```
+### Add a Loader to Load Data into BigQuery
 
 We will now add a loader to load the data into BigQuery.
 
 ```bash
-meltano add loader target-bigquery
+meltano add target-bigquery
 ```
 
 ```bash
-meltano config target-bigquery set --interactive
+meltano config set target-bigquery --interactive
 ```
 
 Set the following options:
@@ -276,6 +307,8 @@ You will see the logs printed out in your console. Once the pipeline is complete
 
 Let's create a Dbt project to transform the data in BigQuery. Before that please exit the `meltano-resale` folder by using the command `cd ..`.
 
+>⚠️ Warning! Please do not create a dbt project inside `meltano-resale` folder. So please return to the root folder `5M-DATA-2.6-DATA-PIPELINES-ORCHESTRATION` before running `dbt init resale_flat`.
+
 To create a new dbt project.
 
 ```bash
@@ -288,7 +321,7 @@ Fill in the required config details.
 - dataset: resale
 - project: your GCP project ID
 
-Please note that the profiles is located at the hidden folder .dbt of your home folder. The `profiles.yml` that is located in the home folder includes multiple projects. Alternatively, you can create a seprate `profiles.yml` for each project.
+Please note that the profiles is located at the hidden folder .dbt of your home folder. The `profiles.yml` that is located in the home folder includes multiple projects. For best practice, please create a separate `profiles.yml` for each project.
 
 To create separate profiles for each project, create a new file called `profiles.yml` under `resale_flat` folder. Then copy the following to `profiles.yml`. Remember to change your key file location and your project ID.
 ```yaml
@@ -337,7 +370,7 @@ You should see 2 new tables in the `resale_flat` dataset.
 
 ---
 
-## Part 2 - Hands-on with Orchestration I
+## Part 3 - Hands-on with Orchestration I (Optional)
 
 ### Background
 
@@ -352,6 +385,8 @@ conda activate dagster
 ```
 
 Also make sure you exit the dbt folder `resale_flat` using command `cd ..`
+
+>⚠️ Warning! Please do not create a dbt project inside `resale_flat` folder. So please return to the root folder `5M-DATA-2.6-DATA-PIPELINES-ORCHESTRATION` before running the command below.
 
 To create a new Dagster project:
 
@@ -401,6 +436,9 @@ First, we need to create a hidden file call `.env`. Inside the `.env` file, we n
 ```yaml
 GITHUB_TOKEN='<YOUR-GITHUB-PERSONAL-ACCESS-TOKEN>'
 ```
+
+> Note: The `.env` file need to be under the folder `dagster-orchestration`.
+
 Replace the `<YOUR-GITHUB-PERSONAL-ACCESS-TOKEN>` with your Github personal access token.
 
 Finally, you need to replace the content in `dagster-orchestration/dagster_orchestration/assets.py` with the below. 
@@ -538,12 +576,16 @@ Then open the UI at http://localhost:3000.
 
 To materialize an asset means to create or update it. Dagster materializes assets by executing the asset's function or triggering an integration. Navigate to Jobs -> `pandas_job`, there you will see the pipeline (dependency between the assets). You can manually trigger the pipeline by clicking on the 'Materialize all' button in the upper right corner of the screen. This will create a Dagster run that will materialize your assets.
 
+![alt text](assets/dagster1.png)
+
 To follow the progress of the materialization and monitor the logs, each run has a dedicated page. To find the page:
 
-- Click on the Runs tab in the upper navigation bar
-- Click the value in the Run ID column on the table of the Runs page
+- Click on the Runs tab in the left panel
+- Click the value in the `Run ID` column on the table of the Runs page
 - The top section displays the progress, and the bottom section live updates with the logs
 
-The metadata of the asset are available under the respective assets name in the Overview tab of `pandas_job` or in the Assets tab. Click on the 'Show Markdown' to see the redered markdown or image.
+The metadata of the asset are available under the respective assets name in the Overview tab of `pandas_job` or in the Assets tab. Click on the `Show Markdown` to see the rendered markdown or image.
 
-You can also view the Job Schedule in the Schedules tab of `dagster_orchestration`. The schedule will run every day at midnight.
+![alt text](assets/dagster2.png)
+
+You can also view the Job Schedule in the Automation tab of `pandas_job`. The schedule will run every day at midnight.
