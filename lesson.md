@@ -177,6 +177,14 @@ Set the following options:
 - `project`: *your_gcp_project_id*
 
 
+### Temporary Work Around for Meltano Packaging Issue
+On February 6, 2026, `setuptools` released version 81.0.0, which officially removed the module `pkg_resources` entirely which meltano depends on. The work around fix is as follows:
+1. Open `meltano.yml` under the project folder `meltano-ingestion`.
+2. Under `name: target-bigquery`, look for `pip_url: git+https://github.com/z3z1ma/target-bigquery.git`
+3. Add `setuptools<70` with a space after git. The resulting setup as as follows:
+
+![alt text](assets/meltano_fix.png)
+
 ### Run Github to BigQuery
 
 We can now run the full ingestion (extract-load) pipeline.
@@ -288,6 +296,14 @@ Set the following options:
 - `flattening_max_depth`: `1`
 - `method`: `batch_job`
 - `project`: *your_gcp_project_id*
+
+### Temporary Work Around for Meltano Packaging Issue
+On February 6, 2026, `setuptools` released version 81.0.0, which officially removed the module `pkg_resources` entirely which meltano depends on. The work around fix is as follows:
+1. Open `meltano.yml` under the project folder `meltano-ingestion`.
+2. Under `name: target-bigquery`, look for `pip_url: git+https://github.com/z3z1ma/target-bigquery.git`
+3. Add `setuptools<70` with a space after git. The resulting setup as as follows:
+
+![alt text](assets/meltano_fix.png)
 
 You can refer to an example of the `meltano.yml` in the `solutions` branch of the lesson 2.6 repo [here](https://github.com/su-ntu-ctp/5m-data-2.6-data-pipelines-orchestration/blob/solutions/solutions/meltano-ingestion/meltano.yml).
 
