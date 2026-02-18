@@ -299,7 +299,7 @@ Set the following options:
 
 ### Temporary Work Around for Meltano Packaging Issue
 On February 6, 2026, `setuptools` released version 81.0.0, which officially removed the module `pkg_resources` entirely which meltano depends on. The work around fix is as follows:
-1. Open `meltano.yml` under the project folder `meltano-ingestion`.
+1. Open `meltano.yml` under the project folder `meltano-resale`.
 2. Under `name: target-bigquery`, look for `pip_url: git+https://github.com/z3z1ma/target-bigquery.git`
 3. Add `setuptools<70` with a space after git. The resulting setup as as follows:
 
