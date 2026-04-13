@@ -67,6 +67,11 @@ meltano init meltano-ingestion
 cd meltano-ingestion
 ```
 
+Set Python 3.11 for all plugins to be inline with environment.
+
+```bash
+meltano config set meltano python python3.11
+```
 
 ### Add an Extractor to Pull Data from Github
 
@@ -228,6 +233,11 @@ meltano init meltano-resale
 
 ```bash
 cd meltano-resale
+```
+
+Set the Python version before adding plugins:
+```bash
+meltano config set meltano python python3.11
 ```
 
 We're going to add an extractor for Postgres to get our data. An extractor is responsible for pulling data out of any data source. We will use the `tap-postgres` extractor to pull data from the Supabase server. 
