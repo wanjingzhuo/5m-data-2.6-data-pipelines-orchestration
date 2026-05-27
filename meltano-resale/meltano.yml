@@ -1,0 +1,34 @@
+default_environment: dev
+project_id: 019e646a-8d42-7cc2-a4f5-525116e1d395
+environments:
+- name: dev
+- name: staging
+- name: prod
+python: python3.11
+plugins:
+  extractors:
+  - name: tap-postgres
+    variant: meltanolabs
+    pip_url: meltanolabs-tap-postgres
+    config:
+      database: postgres
+      filter_schemas:
+      - public
+      host: aws-1-ap-northeast-2.pooler.supabase.com
+      port: 5432
+      user: postgres.hdsstnshkjzcccdaxlsb
+    select:
+    - public-resale_flat_prices_from_jan_2017.*
+  loaders:
+  - name: target-bigquery
+    variant: z3z1ma
+    pip_url: git+https://github.com/z3z1ma/target-bigquery.git setuptools<80
+    config:
+      batch_size: 104857600
+      credentials_path: /home/wanjz/5m-data-2.6-data-pipelines-orchestration/dsai-module-2-495919-e7d822a4eacd.json
+      dataset: resale
+      denormalized: true
+      flattening_enabled: true
+      flattening_max_depth: 1
+      method: batch_job
+      project: dsai-module-2-495919

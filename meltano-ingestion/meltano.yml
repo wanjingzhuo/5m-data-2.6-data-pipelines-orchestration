@@ -1,0 +1,34 @@
+default_environment: dev
+project_id: 019e6431-8018-718b-a676-2a23786947dc
+environments:
+- name: dev
+- name: staging
+- name: prod
+python: python3.11
+plugins:
+  extractors:
+  - name: tap-github
+    variant: meltanolabs
+    pip_url: meltanolabs-tap-github
+    config:
+      repositories:
+      - pandas-dev/pandas
+    select:
+    - releases.tag_name
+    - releases.body
+    - releases.published_at
+  loaders:
+  - name: target-jsonl
+    variant: andyh1203
+    pip_url: target-jsonl
+  - name: target-bigquery
+    variant: z3z1ma
+    pip_url: git+https://github.com/z3z1ma/target-bigquery.git setuptools<80
+    config:
+      credentials_path: /home/wanjz/5m-data-2.6-data-pipelines-orchestration/dsai-module-2-495919-e7d822a4eacd.json
+      dataset: ingestion
+      denormalized: true
+      flattening_enabled: true
+      flattening_max_depth: 1
+      method: batch_job
+      project: dsai-module-2-495919
